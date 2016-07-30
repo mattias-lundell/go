@@ -6,6 +6,7 @@ import (
 
 func TestAdd(t *testing.T) {
 	s := NewIntSet().Add(4, 4, 5).Add(4).Delete(4, 4, 4, 3).Delete().Add()
+
 	if s.Len() != 1 {
 		t.Errorf("expected 1 element got %d", s.Len())
 	}
@@ -13,6 +14,7 @@ func TestAdd(t *testing.T) {
 
 func TestUnion(t *testing.T) {
 	s := NewIntSet(1, 2, 3, 4).Union(NewIntSet(2, 3, 4, 5))
+
 	if s.Len() != 5 {
 		t.Errorf("expected 5 element got %d", s.Len())
 	}
@@ -20,6 +22,7 @@ func TestUnion(t *testing.T) {
 
 func TestMember(t *testing.T) {
 	s := NewIntSet(1, 2, 3, 4, 5)
+
 	if !s.Member(1, 2, 3, 4) {
 		t.Error("missing member")
 	}
@@ -28,7 +31,18 @@ func TestMember(t *testing.T) {
 func TestEqual(t *testing.T) {
 	s1 := NewIntSet(1, 2, 3, 4)
 	s2 := NewIntSet(1, 2, 3, 4)
+
 	if !s1.Equal(s2) {
 		t.Error("not equal")
+	}
+}
+
+func TestIntersect(t *testing.T) {
+	s1 := NewIntSet(1, 2, 3, 4)
+	s2 := NewIntSet(3, 4)
+	s3 := NewIntSet(3, 4)
+
+	if !s1.Intersect(s2).Equal(s3) {
+		t.Error("failed to intersect")
 	}
 }
