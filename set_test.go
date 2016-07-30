@@ -17,3 +17,18 @@ func TestUnion(t *testing.T) {
 		t.Errorf("expected 5 element got %d", s.Len())
 	}
 }
+
+func TestMember(t *testing.T) {
+	s := NewIntSet(1, 2, 3, 4, 5)
+	if !s.Member(1, 2, 3, 4) {
+		t.Error("missing member")
+	}
+}
+
+func TestEqual(t *testing.T) {
+	s1 := NewIntSet(1, 2, 3, 4)
+	s2 := NewIntSet(1, 2, 3, 4)
+	if !s1.Equal(s2) {
+		t.Error("not equal")
+	}
+}
