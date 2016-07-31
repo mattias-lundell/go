@@ -108,3 +108,7 @@ func (s1 IntSet) Difference(s2 IntSet) IntSet {
 	}
 	return difference
 }
+
+func (s1 IntSet) SymmetricDifference(s2 IntSet) IntSet {
+	return s1.Difference(s2).Union(s2.Difference(s1))
+}
