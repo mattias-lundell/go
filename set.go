@@ -92,3 +92,19 @@ func (s1 IntSet) Intersect(s2 IntSet) IntSet {
 
 	return intersection
 }
+
+func (s IntSet) Copy() IntSet {
+	copy := NewIntSet()
+	for x := range s.elements {
+		copy.Add(x)
+	}
+	return copy
+}
+
+func (s1 IntSet) Difference(s2 IntSet) IntSet {
+	difference := s1.Copy()
+	for x := range s2.elements {
+		difference.Delete(x)
+	}
+	return difference
+}

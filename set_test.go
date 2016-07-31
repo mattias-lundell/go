@@ -177,3 +177,36 @@ func TestIntersect(t *testing.T) {
 		assert.Equal(t, tt.expected, tt.s1.Intersect(tt.s2))
 	}
 }
+
+func TestDifference(t *testing.T) {
+	var tests = []struct {
+		s1       IntSet
+		s2       IntSet
+		expected IntSet
+	}{
+		{
+			NewIntSet(4, 5, 6, 7),
+			NewIntSet(4, 5, 6, 7),
+			NewIntSet(),
+		},
+		{
+			NewIntSet(4, 5, 6),
+			NewIntSet(4, 5, 6, 7),
+			NewIntSet(),
+		},
+		{
+			NewIntSet(1, 2, 3),
+			NewIntSet(3, 4, 5),
+			NewIntSet(1, 2),
+		},
+		{
+			NewIntSet(1),
+			NewIntSet(2),
+			NewIntSet(1),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.s1.Difference(tt.s2))
+	}
+}
