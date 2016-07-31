@@ -1,48 +1,179 @@
 package intset
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestAdd(t *testing.T) {
-	s := NewIntSet().Add(4, 4, 5).Add(4).Delete(4, 4, 4, 3).Delete().Add()
+	var tests = []struct {
+		actual   IntSet
+		expected IntSet
+	}{
+		{
+			NewIntSet().Add(4, 4),
+			NewIntSet(4),
+		},
+		{
+			NewIntSet().Add(4, 4, 5).Add(6),
+			NewIntSet(4, 5, 6),
+		},
+		{
+			NewIntSet().Add(),
+			NewIntSet(),
+		},
+	}
 
-	if s.Len() != 1 {
-		t.Errorf("expected 1 element got %d", s.Len())
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.actual)
+	}
+}
+
+func TestDelete(t *testing.T) {
+	var tests = []struct {
+		actual   IntSet
+		expected IntSet
+	}{
+		{
+			NewIntSet(4, 5, 6, 7).Delete(4),
+			NewIntSet(5, 6, 7),
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Delete(),
+			NewIntSet(4, 5, 6, 7),
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Delete(3, 4, 5, 6, 7, 8, 9),
+			NewIntSet(),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.actual)
 	}
 }
 
 func TestUnion(t *testing.T) {
-	s := NewIntSet(1, 2, 3, 4).Union(NewIntSet(2, 3, 4, 5))
+	var tests = []struct {
+		actual   IntSet
+		expected IntSet
+	}{
+		{
+			NewIntSet(4, 5, 6, 7).Union(NewIntSet(4, 5, 6, 7)),
+			NewIntSet(4, 5, 6, 7),
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Union(NewIntSet(8, 9)),
+			NewIntSet(4, 5, 6, 7, 8, 9),
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Union(NewIntSet()),
+			NewIntSet(4, 5, 6, 7),
+		},
+		{
+			NewIntSet().Union(NewIntSet(4, 5, 6, 7)),
+			NewIntSet(4, 5, 6, 7),
+		},
+	}
 
-	if s.Len() != 5 {
-		t.Errorf("expected 5 element got %d", s.Len())
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.actual)
 	}
 }
 
 func TestMember(t *testing.T) {
-	s := NewIntSet(1, 2, 3, 4, 5)
+	var tests = []struct {
+		actual   bool
+		expected bool
+	}{
+		{
+			NewIntSet(4, 5, 6, 7).Member(4),
+			true,
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Member(1),
+			false,
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Member(4, 5, 6, 7),
+			true,
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Member(4, 5, 6, 7, 8),
+			false,
+		},
+		{
+			NewIntSet().Member(4),
+			false,
+		},
+		{
+			NewIntSet(3).Member(4),
+			false,
+		},
+	}
 
-	if !s.Member(1, 2, 3, 4) {
-		t.Error("missing member")
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.actual)
 	}
 }
 
 func TestEqual(t *testing.T) {
-	s1 := NewIntSet(1, 2, 3, 4)
-	s2 := NewIntSet(1, 2, 3, 4)
+	var tests = []struct {
+		s1       IntSet
+		s2       IntSet
+		expected bool
+	}{
+		{
+			NewIntSet(4, 5, 6, 7),
+			NewIntSet(4, 5, 6, 7),
+			true,
+		},
+		{
+			NewIntSet(4, 5, 6),
+			NewIntSet(4, 5, 6, 7),
+			false,
+		},
+		{
+			NewIntSet(),
+			NewIntSet(4, 5, 6, 7),
+			false,
+		},
+	}
 
-	if !s1.Equal(s2) {
-		t.Error("not equal")
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.s1.Equal(tt.s2))
 	}
 }
 
 func TestIntersect(t *testing.T) {
-	s1 := NewIntSet(1, 2, 3, 4)
-	s2 := NewIntSet(3, 4)
-	s3 := NewIntSet(3, 4)
+	var tests = []struct {
+		s1       IntSet
+		s2       IntSet
+		expected IntSet
+	}{
+		{
+			NewIntSet(4, 5, 6, 7),
+			NewIntSet(4, 5, 6, 7),
+			NewIntSet(4, 5, 6, 7),
+		},
+		{
+			NewIntSet(4, 5, 6),
+			NewIntSet(4, 5, 6, 7),
+			NewIntSet(4, 5, 6),
+		},
+		{
+			NewIntSet(),
+			NewIntSet(4, 5, 6, 7),
+			NewIntSet(),
+		},
+		{
+			NewIntSet(1),
+			NewIntSet(2),
+			NewIntSet(),
+		},
+	}
 
-	if !s1.Intersect(s2).Equal(s3) {
-		t.Error("failed to intersect")
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.s1.Intersect(tt.s2))
 	}
 }
