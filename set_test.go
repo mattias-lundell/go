@@ -7,49 +7,68 @@ import (
 
 func TestAdd(t *testing.T) {
 	var tests = []struct {
-		actual   IntSet
-		expected IntSet
+		actual      IntSet
+		expected    IntSet
+		description string
 	}{
+
 		{
 			NewIntSet().Add(4, 4),
 			NewIntSet(4),
+			"should handle adding dublicate",
 		},
 		{
 			NewIntSet().Add(4, 4, 5).Add(6),
 			NewIntSet(4, 5, 6),
+			"should handle chaining multiple calls",
 		},
 		{
 			NewIntSet().Add(),
 			NewIntSet(),
+			"should handle empty",
 		},
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.expected, tt.actual)
+		assert.Equal(t, tt.expected, tt.actual, tt.description)
 	}
 }
 
 func TestDelete(t *testing.T) {
 	var tests = []struct {
-		actual   IntSet
-		expected IntSet
+		actual       IntSet
+		expected     IntSet
+		desctription string
 	}{
 		{
 			NewIntSet(4, 5, 6, 7).Delete(4),
 			NewIntSet(5, 6, 7),
+			"delete 4 from a set containging 4 should return a set without 4",
 		},
 		{
 			NewIntSet(4, 5, 6, 7).Delete(),
 			NewIntSet(4, 5, 6, 7),
+			"should handle empty delete",
 		},
 		{
 			NewIntSet(4, 5, 6, 7).Delete(3, 4, 5, 6, 7, 8, 9),
 			NewIntSet(),
+			"should handle multiple delete",
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Delete(4).Delete(5),
+			NewIntSet(6, 7),
+			"should handle chained deletes",
+		},
+		{
+			NewIntSet(4, 5, 6, 7).Delete(1),
+			NewIntSet(4, 5, 6, 7),
+			"should handle delete of element not in set",
 		},
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.expected, tt.actual)
+		assert.Equal(t, tt.expected, tt.actual, tt.desctription)
 	}
 }
 
